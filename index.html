@@ -1,5 +1,6 @@
 <input type="file" id="files" name="files[]" multiple />
 <output id="list"></output>
+<div id="renderList"></div>
 
 <script src="hashmap.js"></script>
 
@@ -59,8 +60,25 @@
 
         // iterate the map
         hash_map.forEach(function(value, key) {
-            console.log(key + " : " + value + " -///");
+            // append the keyword as H2 ahead of the list
+            var h2 = document.createElement('h2');
+            h2.innerHTML= key;
+            document.getElementById('renderList').appendChild(h2);
             
+            // append the list of files for this keyword
+            var ul = document.createElement('ul');
+            ul.setAttribute('id','proList');
+            document.getElementById('renderList').appendChild(ul);
+            value.forEach(function(file_name) {
+                var li = document.createElement('li');
+                li.setAttribute('class','item');
+                ul.appendChild(li);
+                var newlink = document.createElement('a');
+                newlink.setAttribute('target', '_blank');
+                newlink.setAttribute('href', file_name);
+                newlink.innerText =file_name;
+                li.appendChild(newlink);
+            });
         });
     }
 
