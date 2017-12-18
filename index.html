@@ -1,8 +1,9 @@
 <input type="file" id="files" name="files[]" multiple />
-<output id="list"></output>
 <div id="renderList"></div>
+<div id="pageDivider"></div>
+<div id="selectedFileList"></div>
 
-<script src="hashmap.js"></script>
+<script src="resources/hashmap.js"></script>
 
 <script>
     // Check for the various File API support.
@@ -17,10 +18,15 @@
 
     function handleFileSelect(evt) {
         var files = evt.target.files; // FileList object
-
+        
         // files is a FileList of File objects. List some properties.
-        var output = [];
         for (var i = 0, f; f = files[i]; i++) {
+            // check the type of the file
+            var allowed_types = ["image/jpeg", "video/mp4"];
+            if (!allowed_types.includes(f.type)) {
+                continue;
+            }
+            
             // for each file, split the file name into keywords
             var filename_only = f.name.substring(0, f.name.lastIndexOf('.'));
             var filename_split = filename_only.split(" ");
@@ -38,26 +44,8 @@
                 key_list = hash_map.get(key);
                 key_list.push(directory_location + f.name);
             });
-            
-            output.push(
-                '<li><strong>',
-                '<a target="_blank" href="',
-                directory_location,
-                f.name,
-                '">',
-                f.name,
-                '</a>',
-                '</strong> (',
-                f.type || 'n/a',
-                ') - ',
-                f.size,
-                ' bytes, last modified: ',
-                f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-                '</li>'
-            );
         }
-        document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-
+        
         // iterate the map
         hash_map.forEach(function(value, key) {
             // append the keyword as H2 ahead of the list
@@ -80,6 +68,38 @@
                 li.appendChild(newlink);
             });
         });
+        
+        // create a new line between 2 sections
+        elem = document.createElement("hr");
+        elem.setAttribute("width", "500px");
+        document.getElementById('pageDivider').appendChild(elem);
+        
+        // last, print all the files that have been selected
+        var ppp = document.createElement('ppp');
+        ppp.innerHTML= 'list of files you just selected';
+        document.getElementById('pageDivider').appendChild(ppp);
+        
+        var output = [];
+        for (var i = 0, f; f = files[i]; i++) {
+            output.push(
+                '<li><i>',
+                '<a target="_blank" href="',
+                directory_location,
+                f.name,
+                '">',
+                f.name,
+                '</a>',
+                '</i> (',
+                f.type || 'n/a',
+                ') - ',
+                f.size,
+                ' bytes, last modified: ',
+                f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                '</li>'
+            );
+        }
+        // print the output
+        document.getElementById('selectedFileList').innerHTML = '<ul>' + output.join('') + '</ul>';
     }
 
     document.getElementById('files').addEventListener('change', handleFileSelect, false);
