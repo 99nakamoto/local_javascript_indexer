@@ -20,21 +20,24 @@
         // files is a FileList of File objects. List some properties.
         var output = [];
         for (var i = 0, f; f = files[i]; i++) {
-            // for each file, split the 
+            // for each file, split the file name into keywords
             var filename_only = f.name.substring(0, f.name.lastIndexOf('.'));
             var filename_split = filename_only.split(" ");
+
+            // for each keyword in filename_split, add the filename to the list in hash_map
             filename_split.forEach(function(key) {
-                console.log("split key : " + key);
+                var key_list = hash_map.get(key);
+                // if it's a new key, add an empty array associated with the key
+                if (key_list === undefined) {
+                    var temp = [];
+                    hash_map.set(key, temp);
+                }
+                
+                // push the file name to the key_list
+                key_list = hash_map.get(key);
+                key_list.push(directory_location + f.name);
             });
-
-            var cur_array = hash_map.get('thekey');
-            if (cur_array === undefined) {
-                var temp = [];
-                hash_map.set('thekey', temp);
-            }
-            cur_array = hash_map.get('thekey');
-            cur_array.push(f.name);
-
+            
             output.push(
                 '<li><strong>',
                 '<a target="_blank" href="',
@@ -56,7 +59,8 @@
 
         // iterate the map
         hash_map.forEach(function(value, key) {
-            console.log(key + " : " + value);
+            console.log(key + " : " + value + " -///");
+            
         });
     }
 
