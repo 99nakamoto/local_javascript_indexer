@@ -1,0 +1,65 @@
+<input type="file" id="files" name="files[]" multiple />
+<output id="list"></output>
+
+<script src="hashmap.js"></script>
+
+<script>
+    // Check for the various File API support.
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+        // Great success! All the File APIs are supported.
+    } else {
+        alert('The File APIs are not fully supported in this browser.');
+    }
+
+    var hash_map = new HashMap();
+    var directory_location = document.URL.substring(0, document.URL.lastIndexOf('/') + 1);
+
+    function handleFileSelect(evt) {
+        var files = evt.target.files; // FileList object
+
+        // files is a FileList of File objects. List some properties.
+        var output = [];
+        for (var i = 0, f; f = files[i]; i++) {
+            // for each file, split the 
+            var filename_only = f.name.substring(0, f.name.lastIndexOf('.'));
+            var filename_split = filename_only.split(" ");
+            filename_split.forEach(function(key) {
+                console.log("split key : " + key);
+            });
+
+            var cur_array = hash_map.get('thekey');
+            if (cur_array === undefined) {
+                var temp = [];
+                hash_map.set('thekey', temp);
+            }
+            cur_array = hash_map.get('thekey');
+            cur_array.push(f.name);
+
+            output.push(
+                '<li><strong>',
+                '<a target="_blank" href="',
+                directory_location,
+                f.name,
+                '">',
+                f.name,
+                '</a>',
+                '</strong> (',
+                f.type || 'n/a',
+                ') - ',
+                f.size,
+                ' bytes, last modified: ',
+                f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                '</li>'
+            );
+        }
+        document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+
+        // iterate the map
+        hash_map.forEach(function(value, key) {
+            console.log(key + " : " + value);
+        });
+    }
+
+    document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+</script>
